@@ -95,17 +95,16 @@ int main(int argc, char** argv) {
 
 	pid_t pid;
 	pid = fork();
-	if (pid == -1)
-		{   
-		fprintf(stderr, "error en fork: %d\n", errno);
-			exit(EXIT_FAILURE);
+	if (pid == -1){   
+		fprintf(stderr, "error en fork");
+		exit(EXIT_FAILURE);
 	}
-	if (pid == 0)
-		{
-
+	if (pid == 0){
+		printf("%s\n", "Soy el hijo" );
+		execlp("./datagen","./datagen",NULL);
 	}
 	else{
-
+		printf("%s\n", "Soy el padre" );
 	}
 
 	/* TODO: implement code for your experiments using data provided by datagen and your
