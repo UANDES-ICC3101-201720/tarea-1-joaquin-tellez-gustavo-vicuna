@@ -13,7 +13,7 @@
 #include "const.h"
 #include "util.h"
 
-// TODO: implement
+
 int serial_binsearch(char* A, int n, int T) {
 	int L = 0;
 	int R = n - 1;
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
 	printf("[binsearch] Number of cores available: '%ld'\n",
 	   sysconf(_SC_NPROCESSORS_ONLN));
 
-	/* TODO: parse arguments with getopt */
+	/* parse arguments with getopt */
 
 	int Tvalue = 0;
 	int Evalue = 0;
@@ -92,8 +92,21 @@ int main(int argc, char** argv) {
 		printf ("Non-option argument %s\n", argv[index]);
 
 	/* TODO: start datagen here as a child process. */
-	
-	
+
+	pid_t pid;
+	pid = fork();
+	if (pid == -1)
+		{   
+		fprintf(stderr, "error en fork: %d\n", errno);
+			exit(EXIT_FAILURE);
+	}
+	if (pid == 0)
+		{
+
+	}
+	else{
+
+	}
 
 	/* TODO: implement code for your experiments using data provided by datagen and your
 	* serial and parallel versions of binsearch.
