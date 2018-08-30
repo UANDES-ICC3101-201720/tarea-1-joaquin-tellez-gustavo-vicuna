@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 	/* TODO: parse arguments with getopt */
 
 	int Tvalue = 0;
-	int* Evalue = 0;
+	int Evalue = 0;
 	int Pvalue = 0;
 	int index;
 	int c;
@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
 	opterr = 0;
 
 
-	while ((c = getopt (argc, argv, "abc:")) != -1)
+	while ((c = getopt (argc, argv, "E:T:P:")) != -1)
 		switch (c){
 			case 'E':
 				Evalue = atoi(optarg);
