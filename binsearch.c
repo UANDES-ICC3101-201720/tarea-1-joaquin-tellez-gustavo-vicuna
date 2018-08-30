@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -7,23 +8,26 @@
 #include <stdbool.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 #include "types.h"
 #include "const.h"
 #include "util.h"
 
 // TODO: implement
 int serial_binsearch(char* A, int n, int T) {
-	L := 0
-	R := n − 1
-	while L <= R:
-		m := floor((L + R) / 2)
-	if A[m] < T:
-	    L := m + 1
-	else if A[m] > T:
-	    R := m - 1
-	else:		
-	    return m
-	return unsuccessful    
+	int L = 0;
+	int R = n - 1;
+	int m;
+	while (L <= R){
+	    	m = ((L + R) / 2);
+		if (A[m] < T)
+		    L = m + 1;
+		else if (A[m] > T)
+		    R = m - 1;
+		else		
+		    return m;
+	}
+	return -1;    
 }
 
 // TODO: implement
@@ -37,7 +41,7 @@ int main(int argc, char** argv) {
 
 	
 	clock_t cbegin = clock();
-	serial_binsearch(fd, e, t);
+	
 	printf("[binsearch] Starting up...\n");
 
 	/* Get the number of CPU cores available */
@@ -47,8 +51,8 @@ int main(int argc, char** argv) {
 	/* TODO: parse arguments with getopt */
 
 	int Tvalue = 0;
-	int Evalue = 0;
-	int Pvalue = NULL;
+	int* Evalue = 0;
+	int Pvalue = 0;
 	int index;
 	int c;
 
@@ -67,9 +71,9 @@ int main(int argc, char** argv) {
 				Pvalue = atoi(optarg);
 				break;
 			case '?':
-				if (optopt == 'P' || optopt == 'T' || optopt = 'E')
+				if (optopt == 'P' || optopt == 'T' || optopt == 'E')
 				  fprintf (stderr, "Option -%c requires an argument.\n", optopt);
-				else if (isprint (optopt))
+				else if (isprint(optopt))
 				  fprintf (stderr, "Unknown option `-%c'.\n", optopt);
 				else
 				  fprintf (stderr,
@@ -82,12 +86,13 @@ int main(int argc, char** argv) {
 
 
 	printf ("E = %d, T = %d, P = %d\n",
-	  aflag, bflag, cvalue);
+	  Evalue, Tvalue, Pvalue);
 
 	for (index = optind; index < argc; index++)
 		printf ("Non-option argument %s\n", argv[index]);
 
 	/* TODO: start datagen here as a child process. */
+	
 	
 
 	/* TODO: implement code for your experiments using data provided by datagen and your
