@@ -26,10 +26,11 @@ struct final{
 
 int serial_binsearch(int A[], int n, int T) {
 	int L = 0;
-	int R = n - 1;
+	int R = n-1;
 	int m;
 	while (L <= R){
 	    	m = ((L + R) / 2);
+		//printf("%d\n", m);
 		if (A[m] < T)
 		    L = m + 1;
 		else if (A[m] > T)
@@ -40,53 +41,74 @@ int serial_binsearch(int A[], int n, int T) {
 	return -1;    
 }
 
-void *first(void * ft){
-	struct final *fs = ft;
-	pthread_exit((void *) (intptr_t) serial_binsearch(fs->z, fs->x, fs->y)); //verificar T
+void *first(void * fv){
+	struct final *fs = fv;
+	printf("es:%d\n", fs->y);
+	pthread_exit((void *) (intptr_t) serial_binsearch(fs->z, fs->x, fs->y)); 
+}
+void *second(void * fv){
+	struct final *fs = fv;
+	printf("es:%d\n", fs->y);
+	pthread_exit((void *) (intptr_t) serial_binsearch(fs->z, fs->x, fs->y)); 
+}
+void *third(void * fv){
+	struct final *fs = fv;
+	printf("es:%d\n", fs->y);
+	pthread_exit((void *) (intptr_t) serial_binsearch(fs->z, fs->x, fs->y)); 
 }
 
 // TODO: implement
 int parallel_binsearch(int A[], int n, int T) {
 	int B[n/3];
-	//B = malloc((n/3)*sizeof(char));
-	int C[n/3];
-	//C = malloc((n/3)*sizeof(char));
-	int D[n/3];
-	//D = malloc((n/3)*sizeof(char));
 	
-	for(int i=0; i<=n/3; i++){B[i] = A[i]; } 
-	for(int i=n/3; i<=2*(n/3); i++){C[i-(n/3)] = A[i]; } 
-	for(int i=2*(n/3); i<=n; i++){D[i-(2*n/3)] = A[i]; } 	//quizas se salga de la lista
+	int C[n/3];
+	
+	int D[n/3];
 
-	//struct final fi = {pow(10, T)/3, A[T], B}; //cambiar el t por pvalue
+	for(int i=0; i<n/3; i++){B[i] = A[i]; } 
+	for(int i=n/3; i<2*(n/3); i++){C[i-(n/3)] = A[i]; } 
+	for(int i=2*(n/3); i<n; i++){D[i-(2*n/3)] = A[i]; } 	
+
 	struct final *fi = malloc(sizeof(struct final)+(n/3)*sizeof(int));
-	fi->x = pow(10, T)/3;
+	fi->x = n/3;
 	fi->y = A[T];
 	memcpy(fi->z, B, (n/3)*sizeof(int));
-	//struct final se = {pow(10, T)/3, A[T], C}; //verificar largo de los arreglos, puede q sean distintos
+	
 	struct final *se = malloc(sizeof(struct final)+(n/3)*sizeof(int));
-	fi->x = pow(10, T)/3;
-	fi->y = A[T];
-	memcpy(fi->z, C, (n/3)*sizeof(int));	
-	//struct final th = {pow(10, T)/3, A[T], D};
+	se->x = n/3;
+	se->y = A[T];
+	memcpy(se->z, C, (n/3)*sizeof(int));	
+
 	struct final *th = malloc(sizeof(struct final)+(n/3)*sizeof(int));
-	fi->x = pow(10, T)/3;
-	fi->y = A[T];
-	memcpy(fi->z, D, (n/3)*sizeof(int));
+	th->x = n/3;
+	th->y = A[T];
+	memcpy(th->z, D, (n/3)*sizeof(int));
 
 	pthread_t first_thread;
 	pthread_t second_thread;
 	pthread_t third_thread;
-	//void *first();
-	//void *second();
-	//void *third();
+	
+	printf("esssss: %d\n", fi->x);
+	pthread_create(&first_thread, NULL, first, fi);
+	void * fv;
+	pthread_join(first_thread, &fv);
+	int q = (intptr_t) fv;	
 
-	pthread_create(&first_thread, NULL, first, &fi);
-	void * ft;
-	pthread_join(first_thread, &ft);
-	pthread_create(&second_thread, NULL, first, &se);
-	pthread_create(&third_thread, NULL, first, &th);
-	return 0;
+	pthread_create(&second_thread, NULL, second, se);
+	void * fq;
+	pthread_join(second_thread, &fq);
+	int w = (intptr_t) fq;
+
+	pthread_create(&third_thread, NULL, third, th);
+	void * fr;
+	pthread_join(third_thread, &fr);
+	int f = (intptr_t) fr;	
+	printf("1:%d, 2:%d, 3:%d\n", q, w, f);
+
+	if(q >= 0){return q;}
+	else if(w >= 0){return (w+333);}
+	else if(f >= 0){return (f+666);}
+	return -1;
 }
 
 int main(int argc, char** argv) {
