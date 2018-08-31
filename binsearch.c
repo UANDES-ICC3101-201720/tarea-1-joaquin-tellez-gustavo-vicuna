@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <inttypes.h>
+#include <pthread.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -9,12 +11,20 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/wait.h>
 #include "types.h"
 #include "const.h"
 #include "util.h"
 
+pthread_mutex_t region_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-int serial_binsearch(char* A, int n, int T) {
+struct final{
+	int x;
+	int y;
+	int z[];
+};
+
+int serial_binsearch(int A[], int n, int T) {
 	int L = 0;
 	int R = n - 1;
 	int m;
@@ -30,8 +40,52 @@ int serial_binsearch(char* A, int n, int T) {
 	return -1;    
 }
 
+void *first(void * ft){
+	struct final *fs = ft;
+	pthread_exit((void *) (intptr_t) serial_binsearch(fs->z, fs->x, fs->y)); //verificar T
+}
+
 // TODO: implement
-int parallel_binsearch() {
+int parallel_binsearch(int A[], int n, int T) {
+	int B[n/3];
+	//B = malloc((n/3)*sizeof(char));
+	int C[n/3];
+	//C = malloc((n/3)*sizeof(char));
+	int D[n/3];
+	//D = malloc((n/3)*sizeof(char));
+	
+	for(int i=0; i<=n/3; i++){B[i] = A[i]; } 
+	for(int i=n/3; i<=2*(n/3); i++){C[i-(n/3)] = A[i]; } 
+	for(int i=2*(n/3); i<=n; i++){D[i-(2*n/3)] = A[i]; } 	//quizas se salga de la lista
+
+	//struct final fi = {pow(10, T)/3, A[T], B}; //cambiar el t por pvalue
+	struct final *fi = malloc(sizeof(struct final)+(n/3)*sizeof(int));
+	fi->x = pow(10, T)/3;
+	fi->y = A[T];
+	memcpy(fi->z, B, (n/3)*sizeof(int));
+	//struct final se = {pow(10, T)/3, A[T], C}; //verificar largo de los arreglos, puede q sean distintos
+	struct final *se = malloc(sizeof(struct final)+(n/3)*sizeof(int));
+	fi->x = pow(10, T)/3;
+	fi->y = A[T];
+	memcpy(fi->z, C, (n/3)*sizeof(int));	
+	//struct final th = {pow(10, T)/3, A[T], D};
+	struct final *th = malloc(sizeof(struct final)+(n/3)*sizeof(int));
+	fi->x = pow(10, T)/3;
+	fi->y = A[T];
+	memcpy(fi->z, D, (n/3)*sizeof(int));
+
+	pthread_t first_thread;
+	pthread_t second_thread;
+	pthread_t third_thread;
+	//void *first();
+	//void *second();
+	//void *third();
+
+	pthread_create(&first_thread, NULL, first, &fi);
+	void * ft;
+	pthread_join(first_thread, &ft);
+	pthread_create(&second_thread, NULL, first, &se);
+	pthread_create(&third_thread, NULL, first, &th);
 	return 0;
 }
 
@@ -102,6 +156,7 @@ int main(int argc, char** argv) {
 	if (pid == 0){
 		execlp("./datagen","./datagen",NULL);
 	}
+	//else {wait(NULL); }
 
 	/* TODO: implement code for your experiments using data provided by datagen and your
 	* serial and parallel versions of binsearch.
@@ -138,9 +193,9 @@ int main(int argc, char** argv) {
 	}
 	printf("Enviando info: %d bytes enviados.\n", rc);
 	if ((rc=read(fd,buf,sizeof(buf)))== -1) {
-      perror("read");
-      exit(-1);
-    }
+	        perror("read");
+	        exit(-1);
+	}
 	if ((rc = write(fd, "END", sizeof(buf))) == -1){
 		perror("write error\n");
 		exit(-1);
