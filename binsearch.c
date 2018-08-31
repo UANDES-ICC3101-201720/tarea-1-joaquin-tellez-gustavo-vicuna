@@ -43,17 +43,14 @@ int serial_binsearch(int A[], int n, int T) {
 
 void *first(void * fv){
 	struct final *fs = fv;
-	printf("es:%d\n", fs->y);
 	pthread_exit((void *) (intptr_t) serial_binsearch(fs->z, fs->x, fs->y)); 
 }
 void *second(void * fv){
 	struct final *fs = fv;
-	printf("es:%d\n", fs->y);
 	pthread_exit((void *) (intptr_t) serial_binsearch(fs->z, fs->x, fs->y)); 
 }
 void *third(void * fv){
 	struct final *fs = fv;
-	printf("es:%d\n", fs->y);
 	pthread_exit((void *) (intptr_t) serial_binsearch(fs->z, fs->x, fs->y)); 
 }
 
@@ -88,7 +85,6 @@ int parallel_binsearch(int A[], int n, int T) {
 	pthread_t second_thread;
 	pthread_t third_thread;
 	
-	printf("esssss: %d\n", fi->x);
 	pthread_create(&first_thread, NULL, first, fi);
 	void * fv;
 	pthread_join(first_thread, &fv);
@@ -103,7 +99,6 @@ int parallel_binsearch(int A[], int n, int T) {
 	void * fr;
 	pthread_join(third_thread, &fr);
 	int f = (intptr_t) fr;	
-	printf("1:%d, 2:%d, 3:%d\n", q, w, f);
 
 	if(q >= 0){return q;}
 	else if(w >= 0){return (w+333);}
@@ -116,7 +111,7 @@ int main(int argc, char** argv) {
 	* in your experiment code. It now stands here just for demonstrating time measurement. */
 
 	
-	clock_t cbegin = clock();
+	//clock_t cbegin = clock();
 	
 	printf("[binsearch] Starting up...\n");
 
@@ -238,17 +233,23 @@ int main(int argc, char** argv) {
 		perror("write error\n");
 		exit(-1);
 	}
-
+	clock_t cbegin = clock();
 	/* TODO: implement code for your experiments using data provided by datagen and your
 	* serial and parallel versions of binsearch.
 	* */
-	int av_serial;
-	for (int i=0; i<Evalue; i++){
-		int m;
-		m=serial_binsearch(arreglo,len,arreglo[Pvalue]);
+	//int av_serial;
+	/*for (int i=0; i<Evalue; i++){
+		int ser;
+		ser=serial_binsearch(arreglo,len,arreglo[Pvalue]);
+		printf("%d: %d\n", i, ser);
 		
+	}*/
+	
+	for(int i=0; i<Evalue; i++){
+		int l;
+		l = parallel_binsearch(arreglo, len, Pvalue);
+		printf("10%d: %d\n", i, l);
 	}
-
 
 	/* Probe time elapsed. */
 	clock_t cend = clock();
