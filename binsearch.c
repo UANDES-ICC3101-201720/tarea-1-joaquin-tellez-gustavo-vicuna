@@ -91,12 +91,12 @@ int main(int argc, char** argv) {
 	for (index = optind; index < argc; index++)
 		printf ("Non-option argument %s\n", argv[index]);
 
-	/* TODO: start datagen here as a child process. */
+	/* start datagen here as a child process. */
 
 	pid_t pid;
 	pid = fork();
 	if (pid == -1){   
-		fprintf(stderr, "error en fork");
+		fprintf(stderr, "Error en fork\n");
 		exit(EXIT_FAILURE);
 	}
 	if (pid == 0){
