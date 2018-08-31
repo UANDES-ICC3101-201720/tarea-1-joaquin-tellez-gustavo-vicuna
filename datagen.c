@@ -50,7 +50,6 @@ UINT* generate_values(UINT T, bool sorted) {
 }
 
 int main(int argc, char** argv) {
-    printf("Hola esto esta en el hijo\n");
     struct sockaddr_un addr;
     char buf[100];
     int fd,cl,rc;
