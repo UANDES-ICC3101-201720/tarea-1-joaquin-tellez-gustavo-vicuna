@@ -100,11 +100,7 @@ int main(int argc, char** argv) {
 		exit(EXIT_FAILURE);
 	}
 	if (pid == 0){
-		printf("%s\n", "Soy el hijo" );
 		execlp("./datagen","./datagen",NULL);
-	}
-	else{
-		printf("%s\n", "Soy el padre" );
 	}
 
 	/* TODO: implement code for your experiments using data provided by datagen and your
@@ -140,10 +136,17 @@ int main(int argc, char** argv) {
 		perror("write error\n");
 		exit(-1);
 	}
-	else{
-		printf("Enviando info: %d bytes enviados.\n", rc);
-
+	printf("Enviando info: %d bytes enviados.\n", rc);
+	if ((rc=read(fd,buf,sizeof(buf)))== -1) {
+      perror("read");
+      exit(-1);
+    }
+	if ((rc = write(fd, "END", sizeof(buf))) == -1){
+		perror("write error\n");
+		exit(-1);
 	}
+
+
 
 	/* Probe time elapsed. */
 	clock_t cend = clock();
