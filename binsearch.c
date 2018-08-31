@@ -158,9 +158,6 @@ int main(int argc, char** argv) {
 	}
 	//else {wait(NULL); }
 
-	/* TODO: implement code for your experiments using data provided by datagen and your
-	* serial and parallel versions of binsearch.
-	* */
 	/* connect to datagen and ask for the necessary data in each experiment round.
 	* Create a Unix domain socket with DSOCKET_PATH (see const.h).
 	* Talk to datagen using the messages specified in the assignment description document.
@@ -220,6 +217,15 @@ int main(int argc, char** argv) {
 		exit(-1);
 	}
 
+	/* TODO: implement code for your experiments using data provided by datagen and your
+	* serial and parallel versions of binsearch.
+	* */
+	int av_serial;
+	for (int i=0; i<Evalue; i++){
+		int m;
+		m=serial_binsearch(arreglo,len,arreglo[Pvalue]);
+		
+	}
 
 
 	/* Probe time elapsed. */
