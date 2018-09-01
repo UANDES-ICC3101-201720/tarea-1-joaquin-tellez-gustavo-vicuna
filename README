@@ -1,0 +1,128 @@
+*****************************************************************************************************
+				INFORME ANALISIS ENTREGA 1
+				INTEGRANTE 1: JOAQUIN TELLEZ S.
+				INTEGRANTE 2: GUSTAVO VICUÑA
+*****************************************************************************************************
+
+				DESCRIPCIÓN DEL ALGORITMO:
+
+Busqueda binaria serial:
+
+int serial_binsearch(int A[], int n, int T) {
+	int L = 0;
+	int R = n-1;
+	int m;
+	while (L <= R){
+	    	m = ((L + R) / 2);
+		if (A[m] < T)
+		    L = m + 1;
+		else if (A[m] > T)
+		    R = m - 1;
+		else		
+		    return m;
+	}
+	return -1;    
+}
+
+Esta es la función que utilizamos para realizar la busqueda binaria serial. Como podemos ver, esta es una función que recive como parámetros:
+ 
+int A[] que es un arreglo ordenado de int's de tamaño indefinido, 
+int n que representa el largo del arreglo antes mencionado,  
+int T que representa la posición en la cual se encuentra el elemento que queremos encontrar
+
+Una vez dentro de la función, lo que hace el algoritmo es asignar a 'm' el elemento central del arreglo a revisar. Se verifica si el numero en esa posición es mayor, menor o igual a T y con esto:
+
+Si el elemento en la posición es menor a T, significa que T se encuentra en la mitad derecha del arreglo, por lo que L (left del arreglo) toma el valor de un elemento a la derecha de m y se vuelve a ejecutar el ciclo while.
+Si el elemento en la posición es mayor a T, significa que T se encuentra en la mitad izquierda del arreglo, por lo que R (Extremo derecho del arreglo) toma el valor de un elemento menos que m y se vuelve a ejecutar el ciclo while.
+Los pasos anteriores se repiten hasta encontrar el número deseado y se retorna al usuario.
+En caso de que el número no exista la función retorna -1.
+
+
+Busqueda binaria paralela:
+
+int parallel_binsearch(int A[], int n, int T) {
+	int B[n/3];
+	
+	int C[n/3];
+	
+	int D[n/3];
+
+	for(int i=0; i<n/3; i++){B[i] = A[i]; } 
+	for(int i=n/3; i<2*(n/3); i++){C[i-(n/3)] = A[i]; } 
+	for(int i=2*(n/3); i<n; i++){D[i-(2*n/3)] = A[i]; } 	
+
+	struct final *fi = malloc(sizeof(struct final)+(n/3)*sizeof(int));
+	fi->x = n/3;
+	fi->y = A[T];
+	memcpy(fi->z, B, (n/3)*sizeof(int));
+	
+	struct final *se = malloc(sizeof(struct final)+(n/3)*sizeof(int));
+	se->x = n/3;
+	se->y = A[T];
+	memcpy(se->z, C, (n/3)*sizeof(int));	
+
+	struct final *th = malloc(sizeof(struct final)+(n/3)*sizeof(int));
+	th->x = n/3;
+	th->y = A[T];
+	memcpy(th->z, D, (n/3)*sizeof(int));
+
+	pthread_t first_thread;
+	pthread_t second_thread;
+	pthread_t third_thread;
+	
+	pthread_create(&first_thread, NULL, first, fi);
+	void * fv;
+	pthread_join(first_thread, &fv);
+	int q = (intptr_t) fv;	
+
+	pthread_create(&second_thread, NULL, second, se);
+	void * fq;
+	pthread_join(second_thread, &fq);
+	int w = (intptr_t) fq;
+
+	pthread_create(&third_thread, NULL, third, th);
+	void * fr;
+	pthread_join(third_thread, &fr);
+	int f = (intptr_t) fr;	
+
+	if(q >= 0){return q;}
+	else if(w >= 0){return (w+333);}
+	else if(f >= 0){return (f+666);}
+	return -1;
+}
+
+Esta función recive los mismos parámetros que la función anterior. La diferencia esta en que aquí usamos 3 threads para reducir el tamaño del arreglo en 3 sub arreglos de tamaño n/3 que luego procederan a realizar las mismas acciones que la funcion de busqueda binaria serial pero en 3 sub procesos funcionando al mismo tiempo, por lo que teóricamente debería ser mas rápido encontrar el elemento deseado.
+Para crear estos threads asignamos las variables B, C y D que serán los nuevos arreglos de tamaño n/3 que contendrán 1/3 cada una de los valores originales del arreglo. Definimos los 3 threads con pthread_t y procedemos a crearlos con pthread_create, método que recibe en nuestro caso el pthread, la función afiliada al thread (first, second, third) y atributos del thread que en este caso serán structs (fi, se, th) conformados por 2 ints y un arreglo de int's (los mismos de los parámetros de las funciones). 
+Una vez que tenemos los threads creados se llama a las funciones de este tipo:
+
+void *first(void * fv){
+	struct final *fs = fv;
+	pthread_exit((void *) (intptr_t) serial_binsearch(fs->z, fs->x, fs->y)); 
+}
+
+Las cuales sirven básicamente como un puente entre las funciones de busqueda serial y paralela.
+Aquí con pthread_exit se envia la informacion de los atributos de los threads a busqueda serial para que realicen el mismo proceso de esa funcion y luego retornen la posicion en donde se encontró el elemento a buscar o -1 si no se encuentra en ese arreglo.
+
+
+				ANALISIS DE RESULTADOS:
+
+Los resultados de los experimentos nos dejan ver que la función busqueda binaria serial toma menos tiempo que busqueda binaria paralela cuando el arreglo a trabajar no contiene cantidades significantes de datos.
+Sin embargo, a medida que la cantidad de datos aumenta, la brecha de tiempo entre estas dos funciones se acorta, hasta que llega un punto en el cuál el paralelismo es mas rápido que la función serial.
+Esto deja en evidencia que es muy importante analizar el contexto del problema antes de tomar la decisión sobre que método utilizar para resolver la situación que se impone
+No obstante, dado que la mayoría de los procesos que se realizan actualmente y que además la diferencia de tiempo entre las dos funciones en un principio solo diferencia en milisegundos, paralelismo será la mejor opción a tomar para la mayor parte de los casos.
+
+
+				     CONCLUSIONES:
+
+Si bien usar paralelismo es mas complejo a nivel de código, nos permite ejecutar funciones con grandes cantidades de datos en un menor tiempo que sin usar paralelismo.
+Sin embargo si queremos usar cantidades de datos que no son tan grandes, no es conveniente, dado que la función serial se demora menos en ejecutar el código, por el hecho de que el proceso inicial para hacer paralelismo toma un poco mas de tiempo (el arranque es lento, pero la velocidad a largo plazo es mayor con paralelismo).
+Es por esto que debemos saber bien con los datos que vamos a trabajar antes de tomar la decisión de si es conveniente o no hacer codigos mas complejos para resolver problemas dependiendo de su grado de dificultad.
+
+
+P				  ROBLEMAS ENCONTRADOS:
+
+El programa no se cae en ningún momento, sin embargo, hay ciertos detalles a los que poner atención:
+
+Tuvimos problemas al usar T=8 y T=9, creemos que pueden haber 2 razones de este percance:
+1. el proceso padre está terminando antes que los hijos, dado que no utilizamos wait() ni otra funcion que esperara el termino de un proceso antes que otro, por lo que creemos que se están tratado de ejecutar las funciones antes de que datagen termine de crear los arreglos.
+2. los arreglos son demasiado grandes para la maquina virtual y los tiempos hacen que el programa termine.
