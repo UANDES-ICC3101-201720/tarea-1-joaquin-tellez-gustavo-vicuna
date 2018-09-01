@@ -155,11 +155,6 @@ int main(int argc, char** argv) {
 			default:
 				abort ();
 		}
-
-
-	printf ("E = %d, T = %s, P = %d\n",
-	  Evalue, Tvalue, Pvalue);
-
 	for (index = optind; index < argc; index++)
 		printf ("Non-option argument %s\n", argv[index]);
 
@@ -207,7 +202,6 @@ int main(int argc, char** argv) {
 		perror("write error\n");
 		exit(-1);
 	}
-	printf("Enviando info: %d bytes enviados.\n", rc);
 
 	//Reading data and saving data:
 	int buf2[1000];
@@ -253,8 +247,8 @@ int main(int argc, char** argv) {
 		clock_gettime(CLOCK_MONOTONIC, &start);
 		parallel_binsearch(arreglo, len, Pvalue);
 		clock_gettime(CLOCK_MONOTONIC, &finish);
-		elapsed1 = (finish.tv_sec - start.tv_sec);
-		elapsed1 += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+		elapsed2 = (finish.tv_sec - start.tv_sec);
+		elapsed2 += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
 		printf("%d %d %lf %lf\n", i, atoi(Tvalue), elapsed1, elapsed2);	
 	}
 
