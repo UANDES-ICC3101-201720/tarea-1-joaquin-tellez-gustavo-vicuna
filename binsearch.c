@@ -12,6 +12,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <limits.h>
 #include "types.h"
 #include "const.h"
 #include "util.h"
@@ -225,9 +226,7 @@ int main(int argc, char** argv) {
 			}
 		}
 		linea++;
-		printf("%d\n",arreglo[linea]);
 	}
-	printf("Inicio: %d\n",arreglo[0]);
 	//Ending datagen process:
 	if ((rc = write(fd, "END", sizeof(buf))) == -1){
 		perror("write error\n");
@@ -238,15 +237,25 @@ int main(int argc, char** argv) {
 	* serial and parallel versions of binsearch.
 	* */
 
-	printf("E, T, TIEMPO_SERIAL, TIEMPO_PARALELO");
+	struct timespec start, finish;
+	double elapsed1 = 0;
+	double elapsed2 = 0;
+	printf("E, T, TIEMPO_SERIAL, TIEMPO_PARALELO\n");
 	//int av_serial;
 	for (int i=0; i<Evalue; i++){
-		int ser;
-		ser= serial_binsearch(arreglo,len, arreglo[Pvalue]);
-		
-		int m;
-		m=parallel_binsearch(arreglo, len, Pvalue);
-		printf("%d %d %d %d\n", i, atoi(Tvalue), ser, m);	
+
+		clock_gettime(CLOCK_MONOTONIC, &start);
+		serial_binsearch(arreglo,len, arreglo[Pvalue]);
+		clock_gettime(CLOCK_MONOTONIC, &finish);
+		elapsed1 = (finish.tv_sec - start.tv_sec);
+		elapsed1 += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+
+		clock_gettime(CLOCK_MONOTONIC, &start);
+		parallel_binsearch(arreglo, len, Pvalue);
+		clock_gettime(CLOCK_MONOTONIC, &finish);
+		elapsed1 = (finish.tv_sec - start.tv_sec);
+		elapsed1 += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+		printf("%d %d %lf %lf\n", i, atoi(Tvalue), elapsed1, elapsed2);	
 	}
 
 	/* Probe time elapsed. */
