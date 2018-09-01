@@ -237,18 +237,16 @@ int main(int argc, char** argv) {
 	/* TODO: implement code for your experiments using data provided by datagen and your
 	* serial and parallel versions of binsearch.
 	* */
+
+	printf("E, T, TIEMPO_SERIAL, TIEMPO_PARALELO");
 	//int av_serial;
-	/*for (int i=0; i<Evalue; i++){
+	for (int i=0; i<Evalue; i++){
 		int ser;
-		ser=serial_binsearch(arreglo,len,arreglo[Pvalue]);
-		printf("%d: %d\n", i, ser);
+		ser= serial_binsearch(arreglo,len, arreglo[Pvalue]);
 		
-	}*/
-	
-	for(int i=0; i<Evalue; i++){
-		int l;
-		l = parallel_binsearch(arreglo, len, Pvalue);
-		printf("10%d: %d\n", i, l);
+		int m;
+		m=parallel_binsearch(arreglo, len, Pvalue);
+		printf("%d %d %d %d\n", i, atoi(Tvalue), ser, m);	
 	}
 
 	/* Probe time elapsed. */
