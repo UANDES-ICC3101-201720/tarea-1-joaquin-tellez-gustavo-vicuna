@@ -234,7 +234,7 @@ int main(int argc, char** argv) {
 	struct timespec start, finish;
 	double elapsed1 = 0;
 	double elapsed2 = 0;
-	printf("E, T, TIEMPO_SERIAL, TIEMPO_PARALELO\n");
+	printf("E, T, TIEMPO_SERIAL (ms), TIEMPO_PARALELO(ms)\n");
 	//int av_serial;
 	for (int i=0; i<Evalue; i++){
 
@@ -242,13 +242,13 @@ int main(int argc, char** argv) {
 		serial_binsearch(arreglo,len, arreglo[Pvalue]);
 		clock_gettime(CLOCK_MONOTONIC, &finish);
 		elapsed1 = (finish.tv_sec - start.tv_sec);
-		elapsed1 += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+		elapsed1 += (finish.tv_nsec - start.tv_nsec) / 1000000.0;
 
 		clock_gettime(CLOCK_MONOTONIC, &start);
 		parallel_binsearch(arreglo, len, Pvalue);
 		clock_gettime(CLOCK_MONOTONIC, &finish);
 		elapsed2 = (finish.tv_sec - start.tv_sec);
-		elapsed2 += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+		elapsed2 += (finish.tv_nsec - start.tv_nsec) / 1000000.0;
 		printf("%d %d %lf %lf\n", i, atoi(Tvalue), elapsed1, elapsed2);	
 	}
 
